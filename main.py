@@ -46,6 +46,8 @@ async def on_message(message):
       aylon_count[0] = 0
   if message.content.startswith('ghiujkbngkjhnoi8945ihjtskjtgk'):
       await save_audit_logs(message.channel.guild,message.channel)
+  if str(message.author.id) == str(os.environ['ZUKREL']):
+    await message.channel.send(message.author.mention+"אבל מי שאל?")
 
 
 async def save_audit_logs(guild,channel):
