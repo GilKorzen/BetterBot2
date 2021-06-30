@@ -1,3 +1,4 @@
+
 # dead.py
 import os
 import random
@@ -17,7 +18,7 @@ intents.members = True
 client = discord.Client(intents=intents)
 
 aylon_count = [0]
-
+is_running=[False]
 
 @client.event
 async def on_ready():
@@ -32,27 +33,32 @@ async def on_member_join(member):
 
 @client.event
 async def on_message(message):
-  print (message.author.id)
   if message.content == "!time":
     await  message.channel.send(datetime.datetime.now().strftime("%X"))
   print(str(message.author.id) ==str(os.environ['DISLIKED_MEMBER_ID']))
-  if str(message.author.id) ==str(os.environ['DISLIKED_MEMBER_ID']):
-    await message.channel.send(message.author.mention + " STOP")
+  if str(message.author.id) ==str(os.environ['DISLIKED_MEMBER_ID']) and message.content==os.environ['ZUKERL_SECRET_WORD']:
+    await message.channel.send(message.author.mention + " יובל לוי גיי")
 
   if str(message.author.id) == str(os.environ['LIKED_MEMBER_ID']):
     aylon_count[0] += 1
     if aylon_count[0] == 3:
       await message.channel.send(message.author.mention + " You are the king of this server")
       aylon_count[0] = 0
-  if message.content.startswith('ghiujkbngkjhnoi8945ihjtskjtgk'):
-      await save_audit_logs(message.channel.guild,message.channel)
+
   if str(message.author.id) == str(os.environ['ZUKREL']):
-    await message.channel.send(message.author.mention+"אבל מי שאל?")
+    await message.reply(message.author.mention+"אבל מי שאל?")
+  print (message.author.id)
+  if str(message.author.id)==os.environ['NARCISSISM']:
+    await message.reply(":point_up_2_tone2:"+" המלך אמר")
+  await save_audit_logs(message.channel.guild,message.channel)
 
 
 async def save_audit_logs(guild,channel):
   
-
+  if is_running[0]:
+    return
+  else:
+    is_running[0]=True
   previous_entry= None
    # with open(f'audit_logs_{guild.name}', 'r'):
   for member in guild.members:
@@ -73,6 +79,8 @@ async def save_audit_logs(guild,channel):
 
 
       previous_entry = entry
+
+  is_running[0]=False
 
 keep_alive()
 client.run(TOKEN)
