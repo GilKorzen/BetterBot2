@@ -37,7 +37,7 @@ async def on_message(message):
     await  message.channel.send(datetime.datetime.now().strftime("%X"))
   print(str(message.author.id) ==str(os.environ['DISLIKED_MEMBER_ID']))
   if str(message.author.id) ==str(os.environ['DISLIKED_MEMBER_ID']) and message.content==os.environ['ZUKERL_SECRET_WORD']:
-    await message.channel.send(message.author.mention + " יובל לוי גיי")
+    await message.channel.send(message.author.mention + "יובל לוי")
 
   if str(message.author.id) == str(os.environ['LIKED_MEMBER_ID']):
     aylon_count[0] += 1
