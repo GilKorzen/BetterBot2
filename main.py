@@ -8,6 +8,9 @@ from discord.ext import commands
 import youtube_dl
 import datetime
 from KeepAlive import keep_alive
+import json
+import aiohttp
+import random
 
 from dotenv import load_dotenv
 
@@ -33,11 +36,22 @@ async def on_member_join(member):
 
 @client.event
 async def on_message(message):
+  if message.content== "!SUS":
+    embed = discord.Embed(colour=discord.Colour.red())
+    session = aiohttp.ClientSession()
+    response = await session.get('http://api.giphy.com/v1/gifs/search?q=' +'SUS among us'+ '&api_key='+os.environ['API_GIPHY']+'&limit=10')
+    data = json.loads(await response.text())
+    gif_choice = random.randint(0, 9)
+    embed.set_image(url=data['data'][gif_choice]['images']['original']['url'])
+
+    await session.close()
+
+    await message.channel.send(embed=embed)
   if message.content == "!time":
     await  message.channel.send(datetime.datetime.now().strftime("%X"))
   print(str(message.author.id) ==str(os.environ['DISLIKED_MEMBER_ID']))
-  if str(message.author.id) ==str(os.environ['DISLIKED_MEMBER_ID']) and message.content==os.environ['ZUKERL_SECRET_WORD']:
-    await message.channel.send(message.author.mention + " יובל לוי ")
+  if str(message.author.id) ==os.environ['ALKOBI'] and message.content==os.environ['ZUKERL_SECRET_WORD']:
+    await message.channel.send(message.author.mention + "יובל לוי  ")
 
   if str(message.author.id) == str(os.environ['LIKED_MEMBER_ID']):
     aylon_count[0] += 1
@@ -60,7 +74,6 @@ async def save_audit_logs(guild,channel):
   else:
     is_running[0]=True
   previous_entry= None
-   # with open(f'audit_logs_{guild.name}', 'r'):
   for member in guild.members:
     if str(member.id) == str(os.environ['DISLIKED_MEMBER_ID']):
       snitch_user=member
