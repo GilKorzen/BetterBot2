@@ -120,11 +120,11 @@ dotenv = ["python-dotenv"]
 
 [[package]]
 name = "googletrans"
-version = "3.0.0"
+version = "3.1.0a0"
 description = "Free Google Translate API for Python. Translates totally free of charge."
 category = "main"
 optional = false
-python-versions = "*"
+python-versions = ">=3.6"
 
 [package.dependencies]
 httpx = "0.13.3"
@@ -321,7 +321,7 @@ python-versions = "*"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "dabfcdaab78641e71c1f4cc5bc5f348f174aa85876ebc0256892cfa19c30dca2"
+content-hash = "63fe84b2217329b1a0e5a7c0c43e910e0d33e50f59256944f08645bd5b0bdb89"
 
 [metadata.files]
 aiohttp = [
@@ -400,7 +400,7 @@ flask = [
     {file = "Flask-2.0.1.tar.gz", hash = "sha256:1c4c257b1892aec1398784c63791cbaa43062f1f7aeb555c4da961b20ee68f55"},
 ]
 googletrans = [
-    {file = "googletrans-3.0.0.tar.gz", hash = "sha256:44caeea42d91ff6ead5c2d49db2b88de66c45c2fe874c8ec03eb9b4ceb3a533d"},
+    {file = "googletrans-3.1.0a0.tar.gz", hash = "sha256:d20373a7975791318a7e5d6c6e3205012d7a990b8fabbfc6b0c16017a6dfae04"},
 ]
 h11 = [
     {file = "h11-0.9.0-py2.py3-none-any.whl", hash = "sha256:4bc6d6a1238b7615b266ada57e0618568066f57dd6fa967d1290ec9309b2f2f1"},

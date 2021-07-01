@@ -10,7 +10,7 @@ discord = "^1.7.3"
 flask = "^2.0.1"
 python-dotenv = "^0.18.0"
 youtube-dl = "^2021.6.6"
-googletrans = "^3.0.0"
+googletrans = "^3.1.0a0"
 
 [tool.poetry.dev-dependencies]
 
