@@ -11,7 +11,7 @@ from KeepAlive import keep_alive
 import json
 import aiohttp
 import random
-
+from googletrans import Translator
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -51,7 +51,7 @@ async def on_message(message):
     await  message.channel.send(datetime.datetime.now().strftime("%X"))
   print(str(message.author.id) ==str(os.environ['DISLIKED_MEMBER_ID']))
   if str(message.author.id) ==os.environ['ALKOBI'] and message.content==os.environ['ZUKERL_SECRET_WORD']:
-    await message.channel.send(message.author.mention + "יובל לוי  ")
+    await message.channel.send(message.author.mention + "יובל לוי ")
 
   if str(message.author.id) == str(os.environ['LIKED_MEMBER_ID']):
     aylon_count[0] += 1
@@ -62,8 +62,22 @@ async def on_message(message):
   if str(message.author.id) == str(os.environ['ZUKREL']):
     await message.reply(message.author.mention+"אבל מי שאל?")
   print (message.author.id)
-  if str(message.author.id)==os.environ['NARCISSISM'] and not message.content.startswith('!'):
+  if str(message.author.id)==os.environ['NARCISSISM'] and  message.content.startswith('!'):
     await message.reply(":point_up_2_tone2:"+" המלך אמר")
+
+  if message.content=="תרגם לי" and message.reference is not None:
+    if message.reference.cached_message is None:
+        # Fetching the message
+      channel = client.get_channel(message.reference.channel_id)
+      msg = await channel.fetch_message(message.reference.message_id)
+
+    else:
+      msg = message.reference.cached_message
+    translator=Translator()
+    if translator.translate(msg.content).src=='iw':
+      await message.reply( translator.translate(msg.content,dest='en').text)
+    else:
+      await message.reply( translator.translate(msg.content,dest='iw').text)
   await save_audit_logs(message.channel.guild,message.channel)
 
 
