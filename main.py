@@ -11,6 +11,7 @@ from KeepAlive import keep_alive
 import json
 import aiohttp
 import random
+import asyncio
 from googletrans import Translator
 from dotenv import load_dotenv
 
@@ -22,6 +23,9 @@ client = discord.Client(intents=intents)
 
 aylon_count = [0]
 is_running=[False]
+ydl_opts = {'format': 'bestaudio'}
+FFMPEG_OPTIONS = {'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5', 'options': '-vn'}
+
 
 @client.event
 async def on_ready():
@@ -31,11 +35,36 @@ async def on_ready():
 
 @client.event
 async def on_member_join(member):
-    member.send("ברוך הבא לשרת הטוב יותר")
+    await member.send("ברוך הבא לשרת הטוב יותר")
 
 
 @client.event
 async def on_message(message):
+  if message.content=="rick roll":
+    voiceChannel = message.author.voice
+    if voiceChannel is not None:
+      try:
+        print(voiceChannel.channel)
+        await voiceChannel.channel.connect()
+      except Exception as e:
+        print(e)
+    try:   
+      ydl_opts = {'format': 'bestaudio'}
+      with youtube_dl.YoutubeDL(ydl_opts) as ydl:
+        info = ydl.extract_info("https://youtu.be/dQw4w9WgXcQ", download=False)
+        URL = info['formats'][0]['url']
+      voice = get(client.voice_clients, guild=message.author.guild)
+      voice.play(discord.FFmpegPCMAudio(URL,**FFMPEG_OPTIONS))
+    except Exception as e:
+      print(e)   
+  elif message.content=="!join":
+    voiceChannel = message.author.voice
+    if voiceChannel is not None:
+      try:
+        print(voiceChannel.channel)
+        await voiceChannel.channel.connect()
+      except Exception as e:
+        print(e)
   if message.content== "!SUS":
     embed = discord.Embed(colour=discord.Colour.red())
     session = aiohttp.ClientSession()
@@ -47,11 +76,23 @@ async def on_message(message):
     await session.close()
 
     await message.channel.send(embed=embed)
+
+  if "stalin" in message.content.lower():
+    embed = discord.Embed(colour=discord.Colour.gold())
+    session = aiohttp.ClientSession()
+    response = await session.get('http://api.giphy.com/v1/gifs/search?q=' +'communism'+ '&api_key='+os.environ['API_GIPHY']+'&limit=10')
+    data = json.loads(await response.text())
+    gif_choice = random.randint(0, 9)
+    embed.set_image(url=data['data'][gif_choice]['images']['original']['url'])
+
+    await session.close()
+
+    await message.channel.send(embed=embed)
   if message.content == "!time":
     await  message.channel.send(datetime.datetime.now().strftime("%X"))
   print(str(message.author.id) ==str(os.environ['DISLIKED_MEMBER_ID']))
   if str(message.author.id) ==os.environ['ALKOBI'] and message.content==os.environ['ZUKERL_SECRET_WORD']:
-    await message.channel.send(message.author.mention + "יובל לוי ")
+    await message.channel.send(message.author.mention + "יובל לוי גיי")
 
   if str(message.author.id) == str(os.environ['LIKED_MEMBER_ID']):
     aylon_count[0] += 1
@@ -75,7 +116,7 @@ async def on_message(message):
       msg = message.reference.cached_message
     translator=Translator()
     if translator.translate(msg.content).src=='iw':
-      await message.reply( translator.translate(msg.content,dest='en').text)
+      await message.reply(translator.translate(msg.content,dest='en').text,tts=True)
     else:
       await message.reply( translator.translate(msg.content,dest='iw').text)
   await save_audit_logs(message.channel.guild,message.channel)
