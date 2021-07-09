@@ -11,9 +11,11 @@ from KeepAlive import keep_alive
 import json
 import aiohttp
 import random
+import requests
 import asyncio
 from googletrans import Translator
 from dotenv import load_dotenv
+from operator import itemgetter, attrgetter
 
 load_dotenv()
 TOKEN = os.environ['DISCORD_TOKEN']
@@ -40,6 +42,52 @@ async def on_member_join(member):
 
 @client.event
 async def on_message(message):
+
+  if message.content=="age ranking":
+    date_lst=[[member.name,datetime.datetime.now()- member.created_at] for member in message.guild.members]
+    date_lst.sort(key=itemgetter(1),reverse=True)
+    embed=discord.Embed(title="Oldest users in this server",colour=discord.Colour.random())
+    for i in range(0,5):
+      embed.add_field(name=str(i+1)+'. '+date_lst[i][0], value=f"{date_lst[i][1].days//365} years, {date_lst[i][1].days%365} days and {date_lst[i][1].seconds//3600} hours")
+    await message.channel.send(embed=embed)
+
+
+  if message.content=="how old":
+    trying=datetime.datetime.now() - message.author.created_at
+    print (trying.days, trying.seconds//3600, (trying.seconds//60)%60,trying.seconds%60)
+    embed= discord.Embed(title= message.author.name+"'s age",colour=discord.Colour.random())
+    embed.add_field(name="Years",value=trying.days//365)
+    embed.add_field(name="Days",value=trying.days%365)
+    embed.add_field(name="Hours",value=trying.seconds//3600)
+    embed.add_field(name="Minutes",value=(trying.seconds//60)%60)
+    embed.add_field(name="Seconds",value=trying.seconds%60)
+    
+    await message.channel.send(embed=embed)
+
+  elif message.content.startswith("how old") and len(message.content.split(' '))==3:
+    id=''
+    for letter in message.content.split(' ')[2]:
+      if letter.isdigit():
+        id+=letter
+    try:
+      id=int(id)
+      user=client.get_user(id)
+      trying=datetime.datetime.now() - user.created_at
+      print (trying.days, trying.seconds//3600, (trying.seconds//60)%60,trying.seconds%60)
+      embed= discord.Embed(title= user.name+"'s age",colour=discord.Colour.random())
+      embed.add_field(name="Years",value=trying.days//365)
+      embed.add_field(name="Days",value=trying.days%365)
+      embed.add_field(name="Hours",value=trying.seconds//3600)
+      embed.add_field(name="Minutes",value=(trying.seconds//60)%60)
+      embed.add_field(name="Seconds",value=trying.seconds%60)
+    
+      await message.channel.send(embed=embed)
+    except Exception as e:
+      print(e)
+
+
+
+
   if message.content=="rick roll":
     voiceChannel = message.author.voice
     if voiceChannel is not None:
@@ -66,11 +114,11 @@ async def on_message(message):
       except Exception as e:
         print(e)
   if message.content== "!SUS":
-    embed = discord.Embed(colour=discord.Colour.red())
+    embed = discord.Embed(title="AMOGUS",description="||A very sus|| GIF",colour=discord.Colour.red())
     session = aiohttp.ClientSession()
-    response = await session.get('http://api.giphy.com/v1/gifs/search?q=' +'SUS among us'+ '&api_key='+os.environ['API_GIPHY']+'&limit=10')
+    response = await session.get('http://api.giphy.com/v1/gifs/search?q=' +'SUS among us'+ '&api_key='+os.environ['API_GIPHY']+'&limit=20')
     data = json.loads(await response.text())
-    gif_choice = random.randint(0, 9)
+    gif_choice = random.randint(0, 19)
     embed.set_image(url=data['data'][gif_choice]['images']['original']['url'])
 
     await session.close()
@@ -80,9 +128,9 @@ async def on_message(message):
   if "stalin" in message.content.lower():
     embed = discord.Embed(colour=discord.Colour.gold())
     session = aiohttp.ClientSession()
-    response = await session.get('http://api.giphy.com/v1/gifs/search?q=' +'communism'+ '&api_key='+os.environ['API_GIPHY']+'&limit=10')
+    response = await session.get('http://api.giphy.com/v1/gifs/search?q=' +'communism'+ '&api_key='+os.environ['API_GIPHY']+'&limit=20')
     data = json.loads(await response.text())
-    gif_choice = random.randint(0, 9)
+    gif_choice = random.randint(0, 19)
     embed.set_image(url=data['data'][gif_choice]['images']['original']['url'])
 
     await session.close()
@@ -92,7 +140,7 @@ async def on_message(message):
     await  message.channel.send(datetime.datetime.now().strftime("%X"))
   print(str(message.author.id) ==str(os.environ['DISLIKED_MEMBER_ID']))
   if str(message.author.id) ==os.environ['ALKOBI'] and message.content==os.environ['ZUKERL_SECRET_WORD']:
-    await message.channel.send(message.author.mention + "יובל לוי גיי")
+    await message.channel.send(message.author.mention + "יובל לוי ")
 
   if str(message.author.id) == str(os.environ['LIKED_MEMBER_ID']):
     aylon_count[0] += 1
