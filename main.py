@@ -24,15 +24,20 @@ intents.members = True
 client = discord.Client(intents=intents)
 
 aylon_count = [0]
-is_running=[False]
 ydl_opts = {'format': 'bestaudio'}
 FFMPEG_OPTIONS = {'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5', 'options': '-vn'}
-
+messg=[]
 
 @client.event
 async def on_ready():
   print(os.environ['DISLIKED_MEMBER_ID'])
   print("nothing")
+  channel= client.get_channel(864816075458478110)
+  messg.append(await channel.send("Verify you are not a bot by pressing the :thumbsup: reaction"))
+  await messg[0].add_reaction('\U0001F44D')
+
+  await save_audit_logs(client.guilds[1],discord.utils.get(client.guilds[1].channels, name="general"))
+
 
 
 @client.event
@@ -103,6 +108,10 @@ async def on_message(message):
         URL = info['formats'][0]['url']
       voice = get(client.voice_clients, guild=message.author.guild)
       voice.play(discord.FFmpegPCMAudio(URL,**FFMPEG_OPTIONS))
+      await asyncio.sleep(20)
+      voice.stop()
+      await voice.disconnect()
+
     except Exception as e:
       print(e)   
   elif message.content=="!join":
@@ -140,7 +149,7 @@ async def on_message(message):
     await  message.channel.send(datetime.datetime.now().strftime("%X"))
   print(str(message.author.id) ==str(os.environ['DISLIKED_MEMBER_ID']))
   if str(message.author.id) ==os.environ['ALKOBI'] and message.content==os.environ['ZUKERL_SECRET_WORD']:
-    await message.channel.send(message.author.mention + "יובל לוי ")
+    await message.channel.send(message.author.mention + " יובל לוי  ")
 
   if str(message.author.id) == str(os.environ['LIKED_MEMBER_ID']):
     aylon_count[0] += 1
@@ -167,15 +176,27 @@ async def on_message(message):
       await message.reply(translator.translate(msg.content,dest='en').text,tts=True)
     else:
       await message.reply( translator.translate(msg.content,dest='iw').text)
-  await save_audit_logs(message.channel.guild,message.channel)
+
+  if message.content=="wyr":
+    url = 'http://either.io/'
+
+    x = requests.get(url)
+    text=x.text
+    option1=text[text.find("option_1")+len("option_1:")+2:]
+    option1=option1[:option1.find(',')-1]
+    option2=text[text.find("option_2")+len("option_2:")+2:]
+    option2=option2[:option2.find(',')-1]
+    txt="**Would you rather?** \n:regional_indicator_a: "+option1+"\n**OR** \n:regional_indicator_b: "+option2
+    message_temp=await message.channel.send(txt)
+    await message_temp.add_reaction(emoji="🇦")
+    await message_temp.add_reaction(emoji="🇧")
+
+
+
 
 
 async def save_audit_logs(guild,channel):
   
-  if is_running[0]:
-    return 
-  else:
-    is_running[0]=True
   previous_entry= None
   for member in guild.members:
     if str(member.id) == str(os.environ['DISLIKED_MEMBER_ID']):
@@ -193,13 +214,21 @@ async def save_audit_logs(guild,channel):
           if entry.user==snitch_user:
             await channel.send(notifyUser+" STOP DISCONNECTING")
         previous_entry = entry
-    except:
+    except Exception as e:
+      print(e)
       break
 
 
-
-
-  is_running[0]=False
+@client.event
+async def on_reaction_add(reaction,user):
+  print(reaction.emoji)
+  print("hey")
+  if user.id!=reaction.message.author.id and reaction.message.id==messg[0].id and reaction.emoji=='👍':
+    try:
+      role=discord.utils.get(user.guild.roles , name="verified")
+      await user.add_roles(role)
+    except Exception as e:
+      print(e)
 
 keep_alive()
 client.run(TOKEN)
