@@ -12,6 +12,8 @@ python-dotenv = "^0.18.0"
 youtube-dl = "^2021.6.6"
 googletrans = "^3.1.0a0"
 PyNaCl="^1.4.0"
+bs4 = "^0.0.1"
+lxml="^4.6.3"
 
 [tool.poetry.dev-dependencies]
 

@@ -10,7 +10,7 @@ import datetime
 from KeepAlive import keep_alive
 import json
 import aiohttp
-import random
+from bs4 import BeautifulSoup
 import requests
 import asyncio
 from googletrans import Translator
@@ -190,6 +190,25 @@ async def on_message(message):
     message_temp=await message.channel.send(txt)
     await message_temp.add_reaction(emoji="🇦")
     await message_temp.add_reaction(emoji="🇧")
+  elif message.content=="ספר לי עובדה" or message.content=="tell me a fact":
+    url = 'https://bestlifeonline.com/animal-facts/'
+    random_facts=[]
+    x = requests.get(url)
+    text=x.text
+    soup=BeautifulSoup(text,'lxml')
+    for heading in soup.find_all(["h2"])[:75]:
+      head=heading.text.strip().strip("0123456789").strip()
+      random_facts.append(head)
+    fact=random.choice(random_facts)
+
+    if message.content=="ספר לי עובדה":
+      translator=Translator()
+      await message.channel.send(translator.translate(fact,dest='iw').text)
+    else:
+      await message.channel.send(fact)
+
+
+
 
 
 
